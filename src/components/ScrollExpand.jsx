@@ -36,6 +36,7 @@ export default function ScrollExpand({
   scrimFinal = 0.5,
   children,
   className = '',
+  id,
 }) {
   const root = useRef(null);
 
@@ -104,7 +105,7 @@ export default function ScrollExpand({
   }, [larguraInicial, alturaInicial, raioInicial, raioFinal, zoomInicial, distancia, scrimFinal]);
 
   return (
-    <section ref={root} className={`se ${className}`}>
+    <section ref={root} id={id} className={`se ${className}`}>
       <div className="se__palco">
         <div className="se__quadro">
           <img className="se__media" src={src} alt={alt} />

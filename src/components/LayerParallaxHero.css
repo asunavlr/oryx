@@ -1,6 +1,13 @@
 /* Hero em camadas — ver LayerParallaxHero.jsx para a ordem e as velocidades. */
 
 .lph {
+  /* O padding vive aqui porque duas camadas empilhadas precisam do mesmo
+     recuo para o rodapé cair exatamente onde caía antes. */
+  --lph-pt: clamp(104px, 15vh, 168px);
+  --lph-pb: clamp(40px, 8vh, 96px);
+  --lph-px: 6vw;
+  /* Medida pelo ResizeObserver; o valor aqui é só o primeiro quadro. */
+  --lph-rodape: 120px;
   position: relative;
   min-height: 100svh;
   display: flex;
@@ -67,13 +74,32 @@
   z-index: 2;
   width: 100%;
   /* O topo reserva a nav (64px + folga). Sem isso o título entra por baixo
-     dela e o `overflow:hidden` da seção corta a primeira linha. */
-  padding: clamp(104px, 15vh, 168px) 6vw clamp(40px, 8vh, 96px);
+     dela e o `overflow:hidden` da seção corta a primeira linha. A base reserva
+     a altura do rodapé, que mora noutra camada e não empurra mais o título. */
+  padding: var(--lph-pt) var(--lph-px) calc(var(--lph-pb) + var(--lph-rodape));
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   min-height: 100svh;
   will-change: transform;
+}
+
+/* Mesma caixa do conteúdo, mesma âncora na base — só que no topo da pilha. */
+.lph__acima {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--lph-pt) var(--lph-px) var(--lph-pb);
+  /* A camada cobre a tela inteira; só o que tem conteúdo dentro dela pode
+     receber clique, senão ela engoliria o hover das outras camadas. */
+  pointer-events: none;
+  will-change: transform;
+}
+.lph__acima > * {
+  pointer-events: auto;
 }
 
 .lph__frente {
@@ -170,6 +196,69 @@
 .lph__indice {
   text-align: right;
 }
+
+/* ---------- chamada ---------- */
+
+.lph__chamada {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.lph__acoes {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* Mesma pílula verde do fechamento da página: a ação principal precisa ser
+   reconhecível como a mesma coisa nas duas pontas. */
+.lph__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 24px;
+  border: 0;
+  border-radius: 100px;
+  background: var(--green);
+  color: #04100d;
+  font-weight: 500;
+  font-size: 14.5px;
+  cursor: pointer;
+  box-shadow: 0 12px 32px -14px #6dffb3;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s;
+}
+.lph__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 42px -14px #6dffb3;
+}
+.lph__cta svg {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lph__cta:hover svg {
+  transform: translateY(3px);
+}
+
+.lph__cta-alt {
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  font-size: 14px;
+  color: var(--cream);
+  opacity: 0.68;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: 0.3s;
+}
+.lph__cta-alt:hover {
+  opacity: 1;
+  color: var(--green);
+  border-color: var(--green);
+}
 .lph__indice span {
   color: var(--green);
 }
@@ -178,8 +267,10 @@
   .lph {
     min-height: 92svh;
   }
-  .lph__conteudo {
-    padding: 120px 20px 12vh;
+  .lph {
+    --lph-pt: 120px;
+    --lph-pb: 12vh;
+    --lph-px: 20px;
   }
   .lph h1 {
     font-size: 16vw;
@@ -188,6 +279,12 @@
   }
   .lph__rodape {
     grid-template-columns: 1fr auto;
+  }
+  .lph__chamada {
+    gap: 16px;
+  }
+  .lph__acoes {
+    gap: 12px;
   }
   .lph__indice {
     display: none;
@@ -205,6 +302,7 @@
   .lph__brilho,
   .lph__grade,
   .lph__conteudo,
+  .lph__acima,
   .lph__frente {
     transform: none !important;
     will-change: auto;

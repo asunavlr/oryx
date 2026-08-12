@@ -164,3 +164,31 @@ button.cta__botao{border:0;font:inherit;cursor:pointer}
   .insights-head{grid-template-columns:1fr}
   .insight-grade{grid-template-columns:1fr}
 }
+
+/* ---------- Isca de fim de seção ----------
+   Cada seção termina com as duas únicas saídas que existem: descer mais um
+   andar, ou parar de descer e falar com alguém. O `data-tom` acompanha o fundo
+   da seção — sem isso o bloco fica ilegível nas seções de fundo creme. */
+.isca{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:22px 34px;margin-top:clamp(46px,6vw,84px);padding-top:30px;border-top:1px solid var(--isca-linha)}
+.isca p{margin:0;font-size:14.5px;line-height:1.65;max-width:46ch;color:var(--isca-texto)}
+.isca-acoes{display:flex;align-items:center;flex-wrap:wrap;gap:14px 24px}
+.isca-continuar{display:inline-flex;align-items:center;gap:12px;padding:14px 24px;border:0;border-radius:100px;background:var(--isca-bg);color:var(--isca-cor);font-size:14px;font-weight:500;cursor:pointer;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.isca-continuar:hover{transform:translateY(-2px);box-shadow:0 16px 34px -16px var(--isca-bg)}
+.isca-continuar svg{transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.isca-continuar:hover svg{transform:translateY(3px)}
+.isca-falar{display:inline-flex;align-items:center;gap:10px;padding:6px 0;border:0;border-bottom:1px solid transparent;background:none;font-size:14px;color:var(--isca-texto);cursor:pointer;transition:.3s}
+.isca-falar:hover{border-color:currentColor}
+
+.isca[data-tom="claro"]{--isca-linha:#0c261e1f;--isca-texto:#31433d;--isca-bg:#0c261e;--isca-cor:#f2f0e8}
+.isca[data-tom="claro"] .isca-falar:hover{color:#0c684a}
+.isca[data-tom="escuro"]{--isca-linha:var(--line);--isca-texto:#dff7ecb0;--isca-bg:var(--green);--isca-cor:#04100d}
+.isca[data-tom="escuro"] .isca-falar:hover{color:var(--green)}
+
+/* Nas seções em grade a isca é uma faixa, não uma coluna. */
+.vision>.isca,.solutions>.isca,.insights>.isca{grid-column:1/-1}
+
+@media(max-width:900px){
+  .isca{gap:20px}
+  .isca-acoes{width:100%}
+  .isca-continuar{flex:1 1 auto;justify-content:space-between}
+}

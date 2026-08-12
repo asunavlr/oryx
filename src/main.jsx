@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowDown, ArrowUpRight, MoveRight } from 'lucide-react';
 import gsap from 'gsap';
@@ -69,6 +69,42 @@ const insights = [
     img: '/images/convergencia.jpg',
   },
 ];
+
+/**
+ * Fecho de seção.
+ *
+ * A página tinha uma única chamada, no fim de tudo — quem não chegava lá não
+ * tinha onde clicar. Aqui cada seção termina oferecendo as duas saídas que
+ * existem: descer mais um andar, ou parar de descer e falar com alguém.
+ *
+ * `tom` acompanha o fundo da seção, não o gosto: `claro` nas seções de fundo
+ * creme, `escuro` nas de fundo verde-escuro.
+ */
+function IscaSecao({
+  texto,
+  alvo,
+  rotulo,
+  tom = 'claro',
+  acaoTexto = 'Falar com um especialista',
+  aoIr,
+  aoFalar,
+}) {
+  return (
+    <div className="isca reveal" data-tom={tom}>
+      <p>{texto}</p>
+      <div className="isca-acoes">
+        <button type="button" className="isca-continuar" onClick={() => aoIr(alvo)}>
+          <span>{rotulo}</span>
+          <ArrowDown size={16} />
+        </button>
+        <button type="button" className="isca-falar" onClick={aoFalar}>
+          {acaoTexto}
+          <ArrowUpRight size={15} />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const root = useRef(null);
@@ -143,6 +179,17 @@ function App() {
 
   const go = (id) => document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
 
+  /**
+   * `useMemo` com dependência vazia porque um componente declarado direto no
+   * corpo do App vira um tipo novo a cada render: o React desmontaria e
+   * remontaria as sete iscas toda vez que o modal abrisse, e elas voltariam sem
+   * a animação de entrada que o GSAP já tinha aplicado.
+   */
+  const Isca = useMemo(
+    () => (props) => <IscaSecao {...props} aoIr={go} aoFalar={() => setContato(true)} />,
+    []
+  );
+
   return (
     <div ref={root} className="site-shell">
       <div className="noise" />
@@ -152,7 +199,43 @@ function App() {
       <MenuCortina aoIr={go} aoAbrirContato={() => setContato(true)} />
 
       <main>
-        <LayerParallaxHero>
+        <LayerParallaxHero
+          rodape={
+            <div className="lph__rodape">
+              <div className="lph__chamada">
+                <p>
+                  Inteligência para atravessar ciclos.
+                  <br />
+                  Percorra a Oryx — ou fale agora com um especialista.
+                </p>
+                {/* Duas saídas, uma por temperatura de lead: quem ainda está
+                    olhando desce e conhece; quem já decidiu abre o formulário
+                    direto, sem ter que rolar a página inteira até o fim. */}
+                <div className="lph__acoes">
+                  <button type="button" className="lph__cta" onClick={() => go('#horizonte')}>
+                    <span>Iniciar a experiência</span>
+                    <ArrowDown size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    className="lph__cta-alt"
+                    onClick={() => setContato(true)}
+                  >
+                    Falar com um especialista
+                  </button>
+                </div>
+              </div>
+              <button className="round-btn" onClick={() => go('#sobre')} aria-label="Descobrir">
+                <ArrowDown />
+              </button>
+              <p className="lph__indice">
+                Ribeirão Preto · São Paulo
+                <br />
+                Brasil · <span>21°10&#39; S</span>
+              </p>
+            </div>
+          }
+        >
           <p className="lph__eyebrow">
             <i />
             CAPITAL EM MOVIMENTO
@@ -168,24 +251,10 @@ function App() {
               <span>Se constrói.</span>
             </span>
           </h1>
-          <div className="lph__rodape">
-            <p>
-              Inteligência para atravessar ciclos.
-              <br />
-              Estratégia para ir além.
-            </p>
-            <button className="round-btn" onClick={() => go('#sobre')} aria-label="Descobrir">
-              <ArrowDown />
-            </button>
-            <p className="lph__indice">
-              Ribeirão Preto · São Paulo
-              <br />
-              Brasil · <span>21°10&#39; S</span>
-            </p>
-          </div>
         </LayerParallaxHero>
 
         <ScrollExpand
+          id="horizonte"
           src="/images/horizonte.jpg"
           alt="Cidade ao anoitecer, vista do alto"
           title="Além do horizonte."
@@ -227,6 +296,12 @@ function App() {
               <p>sobre o seu patrimônio</p>
             </div>
           </div>
+
+          <Isca
+            texto="Essa visão tem lastro: veja de onde a Oryx vem e o que ela já construiu."
+            alvo="#marca"
+            rotulo="Continuar"
+          />
         </section>
 
         <section className="manifesto">
@@ -235,7 +310,7 @@ function App() {
           </div>
         </section>
 
-        <section className="masked-section">
+        <section className="masked-section" id="marca">
           <p className="section-kicker">IMAGENS QUE CARREGAM IDEIAS</p>
           <MaskedHeading text="ALÉM DO ÓBVIO" src="/images/facade.jpg" />
 
@@ -255,6 +330,12 @@ function App() {
               <p>gestora autorizada e aderente à ANBIMA</p>
             </div>
           </div>
+
+          <Isca
+            texto="Na prática, isso vira uma relação com nome e sobrenome. É o próximo passo."
+            alvo="#wealth"
+            rotulo="Ver como funciona"
+          />
         </section>
 
         {/* ---------- Wealth ---------- */}
@@ -279,9 +360,13 @@ function App() {
               <li>Relatórios claros, sem letra miúda</li>
               <li>Um interlocutor só, do começo ao fim</li>
             </ul>
-            <button className="link-seta" onClick={() => setContato(true)}>
-              Falar sobre a minha carteira <ArrowUpRight size={16} />
-            </button>
+            <Isca
+              tom="escuro"
+              texto="E tudo isso você acompanha de onde estiver."
+              alvo="#app"
+              rotulo="Ver o aplicativo"
+              acaoTexto="Falar sobre a minha carteira"
+            />
           </div>
         </section>
 
@@ -312,6 +397,12 @@ function App() {
                 <span>Informe de rendimentos e extratos</span>
               </div>
             </div>
+
+            <Isca
+              texto="O aplicativo é a ponta. Atrás dele existem quatro frentes de trabalho."
+              alvo="#solucoes"
+              rotulo="Ver as frentes"
+            />
           </div>
           <div className="app-visual reveal">
             <CelularTresD />
@@ -342,9 +433,16 @@ function App() {
               </article>
             ))}
           </div>
+
+          <Isca
+            tom="escuro"
+            texto="Quatro frentes, um mesmo campo de visão."
+            alvo="#galeria"
+            rotulo="Continuar"
+          />
         </section>
 
-        <section className="gallery-section section">
+        <section className="gallery-section section" id="galeria">
           <div className="gallery-title reveal">
             <div className="section-kicker">NOSSO CAMPO DE VISÃO</div>
             <h2>
@@ -364,6 +462,12 @@ function App() {
             defaultIndex={1}
             expandRatio={0.5}
             height={610}
+          />
+
+          <Isca
+            texto="O que a gente enxerga daqui vira leitura pública toda semana."
+            alvo="#insights"
+            rotulo="Ler o que publicamos"
           />
         </section>
 
@@ -400,6 +504,13 @@ function App() {
               </article>
             ))}
           </div>
+
+          <Isca
+            tom="escuro"
+            texto="Chegou até aqui. O próximo passo é uma conversa."
+            alvo="#contato"
+            rotulo="Ir para o contato"
+          />
         </section>
 
         <CtaFinal aoAbrirContato={() => setContato(true)} />

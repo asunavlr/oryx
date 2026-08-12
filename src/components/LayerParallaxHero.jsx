@@ -22,6 +22,12 @@ gsap.registerPlugin(ScrollTrigger);
  *   TITULO     0.55   ← o texto vive aqui dentro
  *   cidade     0.92   passa por cima do texto
  *   vinheta    1.00   colada na tela
+ *   ACIMA      0.55   mesma velocidade do titulo, mas no topo da pilha
+ *
+ * A camada `acima` existe por um motivo so: a chamada e os botoes nao podem
+ * ficar atras da nevoa. Ela anda exatamente junto do titulo (mesma velocidade,
+ * mesmo sumico), entao o hero continua se lendo como um bloco unico — a unica
+ * diferenca e que a nevoa passa por baixo dela, e nao por cima.
  */
 const CAMADAS = [
   { classe: 'ceu', velocidade: 0.06 },
@@ -29,10 +35,28 @@ const CAMADAS = [
   { classe: 'brilho', velocidade: 0.3 },
   { classe: 'conteudo', velocidade: 0.55 },
   { classe: 'frente', velocidade: 0.92 },
+  { classe: 'acima', velocidade: 0.55 },
 ];
 
-export default function LayerParallaxHero({ children }) {
+export default function LayerParallaxHero({ children, rodape }) {
   const root = useRef(null);
+  const camadaAcima = useRef(null);
+
+  /**
+   * O rodape saiu do fluxo do titulo, entao o titulo perderia o espaco que ele
+   * ocupava e desceria por cima. Aqui a altura real do rodape vira uma variavel
+   * de CSS e volta como padding — medida, nao chutada, porque o bloco muda de
+   * altura conforme a fonte carrega e conforme a largura da tela.
+   */
+  useEffect(() => {
+    const alvo = camadaAcima.current?.firstElementChild;
+    if (!alvo) return;
+    const ro = new ResizeObserver(([entrada]) => {
+      root.current?.style.setProperty('--lph-rodape', `${entrada.contentRect.height}px`);
+    });
+    ro.observe(alvo);
+    return () => ro.disconnect();
+  }, [rodape]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -57,7 +81,7 @@ export default function LayerParallaxHero({ children }) {
 
       // O titulo tambem some, mas mais tarde que as camadas: some quando a
       // cidade da frente ja o cobriu, senao pisca no meio da passagem.
-      gsap.to('.lph__conteudo', {
+      gsap.to(['.lph__conteudo', '.lph__acima'], {
         opacity: 0,
         ease: 'none',
         scrollTrigger: {
@@ -135,6 +159,11 @@ export default function LayerParallaxHero({ children }) {
           precisa cobrir só a base do texto, deixando a cabeça dele à vista. */}
       <div className="lph__frente" aria-hidden />
       <div className="lph__vinheta" aria-hidden />
+
+      {/* Última da pilha: a chamada e os botões ficam por cima da névoa. */}
+      <div className="lph__acima" ref={camadaAcima}>
+        {rodape}
+      </div>
     </section>
   );
 }
