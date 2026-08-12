@@ -9,3 +9,4 @@ oryx-preview*.png
 .chrome-*/
 .DS_Store
 Thumbs.db
+.vercel

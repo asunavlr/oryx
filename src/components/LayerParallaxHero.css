@@ -1,0 +1,212 @@
+/* Hero em camadas — ver LayerParallaxHero.jsx para a ordem e as velocidades. */
+
+.lph {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: #04100d;
+  isolation: isolate;
+}
+
+/* Cada camada é maior que a tela, senão o deslocamento do parallax expõe a
+   borda. 120% cobre folgado o pior caso (velocidade 0.92 × 42%). */
+.lph__ceu,
+.lph__horizonte,
+.lph__brilho,
+.lph__grade,
+.lph__frente,
+.lph__vinheta {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: -12%;
+  bottom: -12%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.lph__ceu {
+  background:
+    radial-gradient(120% 80% at 70% 8%, #10352a 0%, transparent 58%),
+    linear-gradient(168deg, #071b16 0%, #04100d 62%);
+}
+
+.lph__horizonte {
+  background: url('/images/horizonte.jpg') center 22% / cover no-repeat;
+  opacity: 0.42;
+  /* A máscara apaga a base da foto para ela virar horizonte de verdade, em vez
+     de uma imagem com corte reto no meio da tela. */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 78%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 78%);
+  filter: saturate(0.7) contrast(1.08);
+}
+
+.lph__brilho {
+  background:
+    radial-gradient(38% 30% at 74% 40%, #1c7d5a4d, transparent 70%),
+    radial-gradient(30% 24% at 18% 72%, #0d5c7a26, transparent 70%);
+  filter: blur(10px);
+}
+
+.lph__grade {
+  opacity: 0.07;
+  background-image:
+    linear-gradient(var(--mint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mint) 1px, transparent 1px);
+  background-size: 8vw 8vw;
+  mask-image: linear-gradient(to bottom, transparent, #000 34%, transparent 82%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 34%, transparent 82%);
+}
+
+/* O conteúdo é camada, não sobreposição: por isso tem z-index no meio da pilha
+   e a camada da frente passa por cima dele. */
+.lph__conteudo {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  /* O topo reserva a nav (64px + folga). Sem isso o título entra por baixo
+     dela e o `overflow:hidden` da seção corta a primeira linha. */
+  padding: clamp(104px, 15vh, 168px) 6vw clamp(40px, 8vh, 96px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100svh;
+  will-change: transform;
+}
+
+.lph__frente {
+  z-index: 3;
+  /* NÃO é foto. Já foi, e não funcionou: mesmo sendo a mesma imagem noutro
+     recorte, o olho lia duas fotos coladas em vez de profundidade.
+     Agora é só uma névoa escura que sobe mais rápido que o fundo. Ela continua
+     passando na frente do título — que é o ponto do hero em camadas — mas sem
+     competir com a fotografia. */
+  background: linear-gradient(
+    to top,
+    #04100d 0%,
+    #04100de6 26%,
+    #061a15a6 52%,
+    transparent 74%
+  );
+  opacity: 0.9;
+}
+
+.lph__vinheta {
+  z-index: 4;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background:
+    linear-gradient(to top, #04100d 0%, transparent 24%),
+    radial-gradient(126% 96% at 50% 40%, transparent 52%, #04100d99 100%);
+}
+
+/* ---------- conteúdo ---------- */
+
+.lph__logo {
+  height: clamp(24px, min(3vw, 4.4vh), 44px);
+  width: auto;
+  display: block;
+  /* O pai é um flex de coluna, e `align-items` padrão é `stretch`: sem isto a
+     imagem é esticada para a largura inteira e achatada na altura. Elemento de
+     bloco não sofre com isso — imagem sofre, porque tem proporção. */
+  align-self: flex-start;
+  flex: 0 0 auto;
+  margin-bottom: clamp(18px, 3vh, 40px);
+}
+
+.lph__eyebrow {
+  align-self: flex-start;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #dff7ec;
+}
+.lph__eyebrow i {
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: var(--green);
+}
+
+.lph h1 {
+  /* `min(vw, vh)`: numa tela baixa e larga, três linhas a 9.4vw estouram a
+     altura e o título é cortado. O vh segura isso. */
+  font-size: clamp(42px, min(9vw, 12.2vh), 138px);
+  font-weight: 300;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+  margin: auto 0 clamp(28px, 5vh, 64px);
+  max-width: 15ch;
+}
+.lph__linha {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.09em;
+}
+.lph__linha > span {
+  display: block;
+}
+
+.lph__rodape {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 24px;
+}
+.lph__rodape p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  opacity: 0.86;
+  margin: 0;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.7);
+}
+.lph__indice {
+  text-align: right;
+}
+.lph__indice span {
+  color: var(--green);
+}
+
+@media (max-width: 800px) {
+  .lph {
+    min-height: 92svh;
+  }
+  .lph__conteudo {
+    padding: 120px 20px 12vh;
+  }
+  .lph h1 {
+    font-size: 16vw;
+    line-height: 0.84;
+    margin: 4vh 0 5vh;
+  }
+  .lph__rodape {
+    grid-template-columns: 1fr auto;
+  }
+  .lph__indice {
+    display: none;
+  }
+  /* No celular a faixa da frente cobriria o título inteiro. */
+  .lph__frente {
+    mask-image: linear-gradient(to bottom, transparent 68%, #000 90%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 68%, #000 90%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lph__ceu,
+  .lph__horizonte,
+  .lph__brilho,
+  .lph__grade,
+  .lph__conteudo,
+  .lph__frente {
+    transform: none !important;
+    will-change: auto;
+  }
+}

@@ -25,6 +25,23 @@ export function Component() {
     <div className="lumina__media">{slides.map((slide, i) => <img key={slide.media} ref={el => { imageRefs.current[i] = el }} src={slide.media} alt="" style={{ opacity: i === 0 ? 1 : 0 }} />)}<div className="lumina__wash" /></div>
     <div className="lumina__counter"><b>0{active + 1}</b><span>/</span><span>0{slides.length}</span></div>
     <div className="lumina__copy"><p>ORYX / PERSPECTIVAS</p><h2 ref={titleRef}>{slides[active].title.split('').map((char, i) => <span key={`${char}-${i}`}>{char === ' ' ? '\u00a0' : char}</span>)}</h2><p ref={descRef}>{slides[active].description}</p></div>
-    <nav className="lumina__nav" aria-label="Perspectivas">{slides.map((slide, i) => <button key={slide.title} className={i === active ? 'active' : ''} onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => setActive(i)}><i><em /></i><span>0{i + 1}</span>{slide.title}</button>)}</nav>
+    <nav className="lumina__nav" aria-label="Perspectivas">
+      {slides.map((slide, i) => (
+        <button
+          key={slide.title}
+          className={i === active ? 'active' : ''}
+          aria-current={i === active}
+          onMouseEnter={() => setActive(i)}
+          onFocus={() => setActive(i)}
+          onClick={() => setActive(i)}
+        >
+          <i><em /></i>
+          {/* Numero e rotulo em linhas separadas: juntos na mesma linha eles
+              se liam como uma palavra so ("01Visao Global"). */}
+          <span className="lumina__num">0{i + 1}</span>
+          <span className="lumina__rot">{slide.title}</span>
+        </button>
+      ))}
+    </nav>
   </section>
 }
