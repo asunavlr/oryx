@@ -10,3 +10,8 @@ oryx-preview*.png
 .DS_Store
 Thumbs.db
 .vercel
+
+# Obsidian: o layout de painéis é estado local da máquina e só geraria
+# conflito. O resto da config (tema, plugins, grafo) vale a pena versionar.
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
