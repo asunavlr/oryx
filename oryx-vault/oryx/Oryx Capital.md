@@ -20,7 +20,9 @@ Repositório: `asunavlr/oryx` · Vite + React + GSAP + Tailwind 4.
 | [[Efeitos]] | Todo movimento da página, com o parâmetro que o governa |
 | [[Bug — o zoom que não funcionava]] | O `overflow:hidden` que matava o `sticky` |
 | [[Imagens]] | As 11 fotos, o critério de escolha e a pendência de peso |
-| [[Bugs — a rodada de correções]] | Nove defeitos, sete deles meus, com a causa de cada um |
+| [[Bugs — a rodada de correções]] | Dez defeitos, sete deles meus, com a causa de cada um |
+| [[Design system]] | Cor, tipo, forma e movimento — o que existe de verdade |
+| [[Componentes]] | Os dez componentes, a interface de cada um |
 
 ---
 
@@ -38,6 +40,9 @@ Repositório: `asunavlr/oryx` · Vite + React + GSAP + Tailwind 4.
 > "espera." · "legado." · "perspectiva." · "o futuro?" — sempre a palavra que
 > fecha o pensamento, nunca a frase inteira. É o que dá voz à página. Não gastar
 > em outro lugar.
+
+Isto é o resumo. O sistema completo — tokens, escala, raio, sombra, vidro,
+breakpoints — está em [[Design system]], **com as inconsistências marcadas**.
 
 ---
 
@@ -90,7 +95,9 @@ De 5 para 11. Ver [[Imagens]].
 ## Pendências
 
 - [ ] **Peso das imagens** — 13 MB. AVIF/WebP e `srcset`. Ver [[Imagens]]
-- [ ] O `AccordionGallery` e a `LuminaInteractiveList` não foram revisados
+- [ ] O `AccordionGallery` e a `LuminaInteractiveList` não foram revisados — ver [[Componentes]]
+- [ ] `liquid-glass-button` virou código morto; sair dele tira 3 dependências
+- [ ] Escala de tipo, raio e breakpoint sem critério — ver os `[!todo]` em [[Design system]]
 - [ ] Sem `<meta og:*>` — o link compartilhado não mostra prévia
 - [ ] A logo é servida como PNG de 41 KB; um SVG seria menor e nítido em qualquer tamanho
 - [ ] As referências do 21st.dev não puderam ser lidas — ver a ressalva no fim de [[Efeitos]]
